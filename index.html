@@ -147,6 +147,75 @@
   }
   .nav-cta:hover { background: #ff8430 !important; transform: translateY(-1px); }
 
+  /* Hamburger — masqué en desktop */
+  .nav-burger {
+    display: none;
+    flex-direction: column; justify-content: center;
+    gap: 4px;
+    width: 38px; height: 38px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .nav-burger span {
+    display: block;
+    width: 20px; height: 2px;
+    margin: 0 auto;
+    background: var(--ivory);
+    border-radius: 2px;
+    transition: transform 0.32s var(--ease), opacity 0.2s var(--ease);
+  }
+  .nav-burger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .nav-burger.open span:nth-child(2) { opacity: 0; }
+  .nav-burger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  /* Panneau menu mobile */
+  .mobile-menu {
+    position: fixed;
+    top: 78px; left: 12px; right: 12px;
+    z-index: 99;
+    display: flex; flex-direction: column;
+    padding: 10px;
+    background: rgba(15,15,15,0.92);
+    border: 1px solid rgba(245,242,237,0.1);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border-radius: 18px;
+    box-shadow: 0 28px 60px -20px rgba(0,0,0,0.9);
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+    transform-origin: top center;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .mobile-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .mobile-menu a {
+    text-decoration: none;
+    color: var(--ivory);
+    font-family: var(--display);
+    font-size: 16px; font-weight: 500;
+    letter-spacing: -0.01em;
+    padding: 14px 16px;
+    border-radius: 12px;
+    transition: background 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .mobile-menu a:not(:last-child) { border-bottom: 1px solid rgba(245,242,237,0.06); }
+  .mobile-menu a:active { background: rgba(244,113,26,0.12); color: var(--orange); }
+  .mobile-menu-cta {
+    margin-top: 8px;
+    background: var(--orange);
+    color: var(--black) !important;
+    text-align: center;
+    font-weight: 600 !important;
+    border-bottom: none !important;
+  }
+
   /* Sections */
   section { position: relative; z-index: 1; }
   .container { max-width: 1280px; margin: 0 auto; padding: 0 3rem; }
@@ -2022,8 +2091,10 @@
   }
   @media (max-width: 768px) {
     .container, .container-wide { padding: 0 1.25rem; }
-    nav { width: calc(100% - 24px); top: 12px; }
+    nav { width: calc(100% - 24px); top: 12px; gap: 0.6rem; }
+    .nav-links { margin-left: auto; }
     .nav-links li:not(:last-child) { display: none; }
+    .nav-burger { display: flex; }
     .hero-mega-line { font-size: clamp(80px, 26vw, 220px); }
     .hero-side-desc { font-size: 13px; }
     .hero-top { padding: 0 1.25rem; top: 90px; }
@@ -2081,7 +2152,20 @@
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#contact" class="nav-cta">Démarrer</a></li>
   </ul>
+  <button class="nav-burger" id="navBurger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- Menu mobile -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <a href="#services">Services</a>
+  <a href="#pricing">Tarifs</a>
+  <a href="#process">Méthode</a>
+  <a href="#why">À propos</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contact" class="mobile-menu-cta">Démarrer un projet</a>
+</div>
 
 <!-- ═══════════════ HERO ═══════════════ -->
 <section id="hero">
@@ -2715,6 +2799,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
   gsap.registerPlugin(ScrollTrigger);
+
+  /* ─── Menu mobile (hamburger) ─── */
+  (function(){
+    const burger = document.getElementById('navBurger');
+    const menu = document.getElementById('mobileMenu');
+    if (!burger || !menu) return;
+    function setOpen(open){
+      burger.classList.toggle('open', open);
+      menu.classList.toggle('open', open);
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+    burger.addEventListener('click', function(e){
+      e.stopPropagation();
+      setOpen(!menu.classList.contains('open'));
+    });
+    menu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){ setOpen(false); });
+    });
+    document.addEventListener('click', function(e){
+      if (menu.classList.contains('open') && !menu.contains(e.target) && !burger.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') setOpen(false);
+    });
+  })();
 
   /* ─── Progress bar ─── */
   const progress = document.getElementById('progress');
