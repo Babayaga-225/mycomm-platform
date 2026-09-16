@@ -1,13 +1,42 @@
-# OS
-Thumbs.db
-Desktop.ini
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+Icon
 
-# Éditeurs
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
 
-# Temporaire
+# Node (au cas où)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+
+# Fichiers temp
 *.tmp
-~$*
+*.log
